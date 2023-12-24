@@ -2,10 +2,12 @@ package com.saltserv.eachscaffold
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -53,6 +55,7 @@ fun EachScaffoldApp() {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
                     containerColor = Color.Black
                 ),
                 title = {
@@ -62,15 +65,13 @@ fun EachScaffoldApp() {
                     )
                 },
                 navigationIcon = {
-                    // TODO
+                    GetPreviousDestination(navController, navBackStackEntry)
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    getNextDestination(navController, navBackStackEntry)
-                },
+                onClick = { getNextDestination(navController, navBackStackEntry) },
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
@@ -152,7 +153,7 @@ fun getNextDestination(
         navController.navigate(
             Routes.Screen2.path.replace(
                 "{parameter}",
-                "My Extra Parameter"
+                "Extra parameter"
             )
         )
     }
@@ -170,6 +171,27 @@ fun getNextDestination(
             popUpTo(Routes.Main.path) {
             }
             launchSingleTop = true
+        }
+    }
+
+    else -> {}
+}
+
+@Composable
+fun GetPreviousDestination(
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry?,
+) = when (navBackStackEntry?.destination?.route) {
+
+    Routes.Screen1.path,
+    Routes.Screen2.path,
+    Routes.Screen3.path,
+    Routes.Screen4.path -> {
+        IconButton(onClick = { navController.navigateUp() }) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null
+            )
         }
     }
 
