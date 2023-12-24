@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Screen2(
-    extraParameter : String,
+    extraParameter: String,
     navigateForward: () -> Unit,
     navigateBack: () -> Unit
 ) {
