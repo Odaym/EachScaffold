@@ -35,7 +35,7 @@ fun Screen2(
                     containerColor = Color.Black
                 ),
                 title = {
-                    Text(text = "Screen 2 - Two - Extra $extraParameter")
+                    Text(text = "Screen 2 - Two -> $extraParameter")
                 },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {

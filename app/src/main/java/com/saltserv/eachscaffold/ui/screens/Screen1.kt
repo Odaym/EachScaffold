@@ -1,10 +1,10 @@
 package com.saltserv.eachscaffold.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,16 +16,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Screen1(
-    navigateForward: () -> Unit,
+    viewModel: Screen1ViewModel = viewModel(),
+    navigateForward: (String) -> Unit,
     navigateBack: () -> Unit
 ) {
+    val myData = viewModel.data.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -49,7 +54,9 @@ fun Screen1(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = navigateForward,
+                onClick = {
+                    navigateForward(myData.value ?: "")
+                },
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
@@ -64,7 +71,12 @@ fun Screen1(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "Screen 1 - One")
+            Text(
+                modifier = Modifier.clickable {
+                    viewModel.getData("${2 * 7}")
+                },
+                text = "Screen 1 - One"
+            )
         }
     }
 }
