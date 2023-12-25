@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -27,6 +29,7 @@ import androidx.navigation.navArgument
 import com.saltserv.eachscaffold.ui.screens.MainScreen
 import com.saltserv.eachscaffold.ui.screens.ProfileScreen
 import com.saltserv.eachscaffold.ui.screens.Screen1
+import com.saltserv.eachscaffold.ui.screens.Screen1ViewModel
 import com.saltserv.eachscaffold.ui.screens.Screen2
 import com.saltserv.eachscaffold.ui.screens.Screen3
 import com.saltserv.eachscaffold.ui.screens.Screen4
@@ -70,8 +73,18 @@ fun EachScaffoldApp() {
             )
         },
         floatingActionButton = {
+            val screen1ViewModel: Screen1ViewModel = viewModel()
+
+            val myData = screen1ViewModel.data.collectAsState()
+
             FloatingActionButton(
-                onClick = { getNextDestination(navController, navBackStackEntry) },
+                onClick = {
+                    getNextDestination(
+                        myData.value,
+                        navController,
+                        navBackStackEntry
+                    )
+                },
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
@@ -139,6 +152,7 @@ fun getScreenTitle(
 }
 
 fun getNextDestination(
+    myData: String?,
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry?,
 ) = when (navBackStackEntry?.destination?.route) {
