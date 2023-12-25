@@ -73,14 +73,18 @@ fun EachScaffoldApp() {
             )
         },
         floatingActionButton = {
-            val screen1ViewModel: Screen1ViewModel = viewModel()
 
-            val myData = screen1ViewModel.data.collectAsState()
+            val screen1ViewModel: Screen1ViewModel = viewModel()
+            val result = getNextDestination(
+                screen1ViewModel,
+                navController,
+                navBackStackEntry
+            )
 
             FloatingActionButton(
                 onClick = {
                     getNextDestination(
-                        myData.value,
+                        screen1ViewModel,
                         navController,
                         navBackStackEntry
                     )
@@ -151,8 +155,9 @@ fun getScreenTitle(
     else -> null
 }
 
+@Composable
 fun getNextDestination(
-    myData: String?,
+    screen1ViewModel: Screen1ViewModel,
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry?,
 ) = when (navBackStackEntry?.destination?.route) {
@@ -164,10 +169,12 @@ fun getNextDestination(
     }
 
     Routes.Screen1.path -> {
+        val myData = screen1ViewModel.data.collectAsState()
+
         navController.navigate(
             Routes.Screen2.path.replace(
                 "{parameter}",
-                myData ?: ""
+                myData.value ?: ""
             )
         )
     }
