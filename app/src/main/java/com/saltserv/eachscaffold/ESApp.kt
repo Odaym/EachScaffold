@@ -1,22 +1,18 @@
 package com.saltserv.eachscaffold
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavBackStackEntry
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -30,6 +26,12 @@ import com.saltserv.eachscaffold.ui.screens.Screen1
 import com.saltserv.eachscaffold.ui.screens.Screen2
 import com.saltserv.eachscaffold.ui.screens.Screen3
 import com.saltserv.eachscaffold.ui.screens.Screen4
+
+data class ScaffoldViewState(
+    val title: @Composable () -> Unit = {},
+    val navigationIcon: @Composable () -> Unit = {},
+    val floatingActionButton: @Composable () -> Unit = {}
+)
 
 sealed class Routes(
     val path: String
@@ -50,6 +52,10 @@ fun EachScaffoldApp() {
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
+    val scaffoldState = remember {
+        mutableStateOf(ScaffoldViewState())
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,27 +64,11 @@ fun EachScaffoldApp() {
                     navigationIconContentColor = Color.White,
                     containerColor = Color.Black
                 ),
-                title = {
-                    Text(
-                        text = getScreenTitle(navBackStackEntry)
-                            ?: "Each Scaffold App"
-                    )
-                },
-                navigationIcon = {
-                    GetPreviousDestination(navController, navBackStackEntry)
-                }
+                title = scaffoldState.value.title,
+                navigationIcon = scaffoldState.value.navigationIcon
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { getNextDestination(navController, navBackStackEntry) },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
-                )
-            }
-        },
+        floatingActionButton = scaffoldState.value.floatingActionButton,
         bottomBar = { EachScaffoldBottomBar(navController) },
     ) {
         NavHost(
@@ -87,13 +77,28 @@ fun EachScaffoldApp() {
             startDestination = Routes.Main.path
         ) {
             composable(Routes.Main.path) {
-                MainScreen()
+                MainScreen(
+                    scaffoldState = scaffoldState,
+                    screenTitle = navBackStackEntry?.destination?.route,
+                    navigateForward = { navController.navigate(Routes.Screen1.path) }
+                )
             }
             composable(Routes.Profile.path) {
-                ProfileScreen()
+                ProfileScreen(scaffoldState, navigateForward = {
+                    navController.navigate(Routes.Screen1.path)
+                })
             }
             composable(Routes.Screen1.path) {
                 Screen1(
+                    scaffoldState = scaffoldState,
+                    navigateForward = { myData ->
+                        navController.navigate(
+                            Routes.Screen2.path.replace(
+                                "{parameter}",
+                                myData
+                            )
+                        )
+                    },
                     navigateBack = { navController.navigateUp() }
                 )
             }
@@ -105,95 +110,34 @@ fun EachScaffoldApp() {
                 val parameter = extra.arguments?.getString("parameter") ?: ""
 
                 Screen2(
+                    scaffoldState = scaffoldState,
                     extraParameter = parameter,
+                    navigateForward = { navController.navigate(Routes.Screen3.path) },
                     navigateBack = { navController.navigateUp() }
                 )
             }
             composable(Routes.Screen3.path) {
                 Screen3(
+                    scaffoldState = scaffoldState,
+                    navigateForward = {
+                        navController.navigate(Routes.Screen4.path)
+                    },
                     navigateBack = { navController.navigateUp() }
                 )
             }
             composable(Routes.Screen4.path) {
                 Screen4(
+                    scaffoldState = scaffoldState,
+                    navigateForward = {
+                        navController.navigate(Routes.Main.path) {
+                            popUpTo(Routes.Main.path) {
+                            }
+                            launchSingleTop = true
+                        }
+                    },
                     navigateBack = { navController.navigateUp() }
                 )
             }
         }
     }
-}
-
-fun getScreenTitle(
-    navBackStackEntry: NavBackStackEntry?
-) = when (navBackStackEntry?.destination?.route) {
-    Routes.Main.path,
-    Routes.Profile.path,
-    Routes.Screen1.path,
-    Routes.Screen2.path,
-    Routes.Screen3.path,
-    Routes.Screen4.path -> {
-        navBackStackEntry.destination.route
-    }
-
-    else -> null
-}
-
-fun getNextDestination(
-    navController: NavHostController,
-    navBackStackEntry: NavBackStackEntry?,
-) = when (navBackStackEntry?.destination?.route) {
-
-    // Both go to Screen1
-    Routes.Profile.path,
-    Routes.Main.path -> {
-        navController.navigate(Routes.Screen1.path)
-    }
-
-    Routes.Screen1.path -> {
-        navController.navigate(
-            Routes.Screen2.path.replace(
-                "{parameter}",
-                "Extra parameter"
-            )
-        )
-    }
-
-    Routes.Screen2.path -> {
-        navController.navigate(Routes.Screen3.path)
-    }
-
-    Routes.Screen3.path -> {
-        navController.navigate(Routes.Screen4.path)
-    }
-
-    Routes.Screen4.path -> {
-        navController.navigate(Routes.Main.path) {
-            popUpTo(Routes.Main.path) {
-            }
-            launchSingleTop = true
-        }
-    }
-
-    else -> {}
-}
-
-@Composable
-fun GetPreviousDestination(
-    navController: NavHostController,
-    navBackStackEntry: NavBackStackEntry?,
-) = when (navBackStackEntry?.destination?.route) {
-
-    Routes.Screen1.path,
-    Routes.Screen2.path,
-    Routes.Screen3.path,
-    Routes.Screen4.path -> {
-        IconButton(onClick = { navController.navigateUp() }) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null
-            )
-        }
-    }
-
-    else -> {}
 }
