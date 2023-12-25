@@ -167,7 +167,7 @@ fun getNextDestination(
         navController.navigate(
             Routes.Screen2.path.replace(
                 "{parameter}",
-                "Extra parameter"
+                myData ?: ""
             )
         )
     }
