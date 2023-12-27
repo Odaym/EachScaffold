@@ -58,9 +58,7 @@ fun NavBackStackEntry.getNavigationIcon(
 
     val onClickAction: () -> Unit = when (destination.route) {
         Routes.Screen1.path,
-        Routes.Screen2.path,
-        Routes.Screen3.path,
-        Routes.Screen4.path -> {
+        Routes.Screen2.path -> {
             { navController.navigateUp() }
         }
 

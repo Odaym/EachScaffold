@@ -25,8 +25,6 @@ import com.saltserv.eachscaffold.ui.screens.MainScreen
 import com.saltserv.eachscaffold.ui.screens.ProfileScreen
 import com.saltserv.eachscaffold.ui.screens.Screen1
 import com.saltserv.eachscaffold.ui.screens.Screen2
-import com.saltserv.eachscaffold.ui.screens.Screen3
-import com.saltserv.eachscaffold.ui.screens.Screen4
 
 data class ScaffoldViewState(
     val title: @Composable () -> Unit = {},
@@ -42,8 +40,6 @@ sealed class Routes(
 
     data object Screen1 : Routes("Screen1")
     data object Screen2 : Routes("Screen2/{parameter}")
-    data object Screen3 : Routes("Screen3")
-    data object Screen4 : Routes("Screen4")
 }
 
 @ExperimentalMaterial3Api
@@ -111,22 +107,6 @@ fun EachScaffoldApp() {
                 Screen2(
                     scaffoldState = scaffoldState,
                     extraParameter = parameter,
-                    navigateForward = { navController.navigate(Routes.Screen3.path) },
-                    navigateBack = { navController.navigateUp() }
-                )
-            }
-            composable(Routes.Screen3.path) {
-                Screen3(
-                    scaffoldState = scaffoldState,
-                    navigateForward = {
-                        navController.navigate(Routes.Screen4.path)
-                    },
-                    navigateBack = { navController.navigateUp() }
-                )
-            }
-            composable(Routes.Screen4.path) {
-                Screen4(
-                    scaffoldState = scaffoldState,
                     navigateForward = {
                         navController.navigate(Routes.Main.path) {
                             popUpTo(Routes.Main.path)
