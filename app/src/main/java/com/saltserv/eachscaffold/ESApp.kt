@@ -1,6 +1,5 @@
 package com.saltserv.eachscaffold
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,6 +18,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.saltserv.eachscaffold.ui.getAppBarTitle
+import com.saltserv.eachscaffold.ui.getFloatingActionButton
+import com.saltserv.eachscaffold.ui.getNavigationIcon
 import com.saltserv.eachscaffold.ui.screens.MainScreen
 import com.saltserv.eachscaffold.ui.screens.ProfileScreen
 import com.saltserv.eachscaffold.ui.screens.Screen1
@@ -64,11 +65,14 @@ fun EachScaffoldApp() {
                     navigationIconContentColor = Color.White,
                     containerColor = Color.Black
                 ),
-                title = scaffoldState.value.title,
-                navigationIcon = scaffoldState.value.navigationIcon
+                title = navBackStackEntry?.getAppBarTitle(scaffoldState) ?: {},
+                navigationIcon = navBackStackEntry?.getNavigationIcon(navController) ?: {}
             )
         },
-        floatingActionButton = scaffoldState.value.floatingActionButton,
+        floatingActionButton = navBackStackEntry?.getFloatingActionButton(
+            scaffoldState = scaffoldState,
+            navController = navController
+        ) ?: {},
         bottomBar = { EachScaffoldBottomBar(navController) },
     ) {
         NavHost(
@@ -78,15 +82,10 @@ fun EachScaffoldApp() {
         ) {
             composable(Routes.Main.path) {
                 MainScreen(
-                    scaffoldState = scaffoldState,
-                    screenTitle = navBackStackEntry?.destination?.route,
-                    navigateForward = { navController.navigate(Routes.Screen1.path) }
                 )
             }
             composable(Routes.Profile.path) {
-                ProfileScreen(scaffoldState, navigateForward = {
-                    navController.navigate(Routes.Screen1.path)
-                })
+                ProfileScreen()
             }
             composable(Routes.Screen1.path) {
                 Screen1(
@@ -130,8 +129,7 @@ fun EachScaffoldApp() {
                     scaffoldState = scaffoldState,
                     navigateForward = {
                         navController.navigate(Routes.Main.path) {
-                            popUpTo(Routes.Main.path) {
-                            }
+                            popUpTo(Routes.Main.path)
                             launchSingleTop = true
                         }
                     },

@@ -2,41 +2,13 @@ package com.saltserv.eachscaffold.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.saltserv.eachscaffold.ScaffoldViewState
 
 @Composable
-fun ProfileScreen(
-    scaffoldState: MutableState<ScaffoldViewState>,
-    navigateForward: () -> Unit
-) {
-    LaunchedEffect(Unit) {
-        scaffoldState.value = ScaffoldViewState(
-            title = {
-                Text(text = "Profile Screen")
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = navigateForward,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
-                    )
-                }
-            }
-        )
-    }
-
+fun ProfileScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize(),
