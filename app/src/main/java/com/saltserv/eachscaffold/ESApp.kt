@@ -90,8 +90,7 @@ fun EachScaffoldApp() {
                 Screen4(
                     navigateForward = {
                         navController.navigate(Routes.Main.path) {
-                            popUpTo(Routes.Main.path) {
-                            }
+                            popUpTo(Routes.Main.path)
                             launchSingleTop = true
                         }
                     },
